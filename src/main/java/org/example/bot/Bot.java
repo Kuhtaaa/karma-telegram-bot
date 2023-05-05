@@ -1,6 +1,8 @@
 package org.example.bot;
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.groupadministration.BanChatMember;
+import org.telegram.telegrambots.meta.api.methods.groupadministration.UnbanChatMember;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -47,6 +49,11 @@ public class Bot extends TelegramLongPollingBot {
             sendText(update.getMessage().getChatId(), "Всем привет");
             first_start = false;
         }
+
+//        goodUser( 5765278180L, -1001861341922L);
+//        if (update.getMessage().getFrom().getId() == 5765278180L) {
+//            badUser(update.getMessage());
+//        }
 
         if(checkBlockList(update.getMessage().getFrom()) && update.getMessage().getChatId() < 0) {
             deleteMessage(update.getMessage());
@@ -131,7 +138,7 @@ public class Bot extends TelegramLongPollingBot {
     private byte messageEvaluation(Message msg) {
         byte balance_delta = 0;
 
-        if(msg.getText().equals(Reaction.down.getCode()) || isCheat(msg)) {
+        if(isCheat(msg) || msg.getText().equals(Reaction.down.getCode())) {
             balance_delta = -10;
         } else if (msg.getText().equals(Reaction.up.getCode())) {
             balance_delta = 10;
@@ -170,5 +177,27 @@ public class Bot extends TelegramLongPollingBot {
             }
         }
         return null;
+    }
+
+    private void badUser(Message msg) {
+        BanChatMember bcm = BanChatMember.builder()
+                .userId(msg.getFrom().getId())
+                .chatId(msg.getChatId()).build();
+        try {
+            System.out.println(execute(bcm));
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void goodUser(long user_id, long chat_id) {
+        UnbanChatMember bcm = UnbanChatMember.builder()
+                .userId(user_id)
+                .chatId(chat_id).build();
+        try {
+            System.out.println(execute(bcm));
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
