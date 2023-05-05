@@ -5,6 +5,7 @@ import org.telegram.telegrambots.meta.api.methods.groupadministration.BanChatMem
 import org.telegram.telegrambots.meta.api.methods.groupadministration.UnbanChatMember;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
@@ -50,6 +51,7 @@ public class Bot extends TelegramLongPollingBot {
             first_start = false;
         }
 
+//        changeMsg(update.getMessage());
 //        goodUser( 5765278180L, -1001861341922L);
 //        if (update.getMessage().getFrom().getId() == 5765278180L) {
 //            badUser(update.getMessage());
@@ -196,6 +198,18 @@ public class Bot extends TelegramLongPollingBot {
                 .chatId(chat_id).build();
         try {
             System.out.println(execute(bcm));
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void changeMsg(Message msg) {
+        EditMessageText emt = EditMessageText.builder()
+                .chatId(msg.getChatId())
+                .messageId(msg.getMessageId())
+                .text("Ха, Лох!").build();
+        try {
+            execute(emt);
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }
